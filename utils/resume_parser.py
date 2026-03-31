@@ -1,17 +1,19 @@
 import pdfplumber
 import docx
 
-def extract_text(uploaded_file):
+def extract_text(file):
     text = ""
 
-    if uploaded_file.name.endswith(".pdf"):
-        with pdfplumber.open(uploaded_file) as pdf:
+    if file.name.endswith(".pdf"):
+        with pdfplumber.open(file) as pdf:
             for page in pdf.pages:
-                text += page.extract_text() or ""
+                page_text = page.extract_text()
+                if page_text:
+                    text += page_text + "\n"
 
-    elif uploaded_file.name.endswith(".docx"):
-        doc = docx.Document(uploaded_file)
+    elif file.name.endswith(".docx"):
+        doc = docx.Document(file)
         for para in doc.paragraphs:
             text += para.text + "\n"
 
-    return text
+    return text.strip()
