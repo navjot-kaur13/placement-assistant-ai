@@ -1,59 +1,58 @@
 import streamlit as st
-
-# ==============================
-# Backend Imports
-# ==============================
 from utils.resume_parser import extract_text
 from utils.ats_engine import ats_engine
 from utils.jd_matcher import match_jd
 from utils.risk_flags import detect_risks
 from utils.persona_engine import persona_engine
 from utils.improvement_plan import generate_plan
-
-# 🔥 Analytics
 from analytics import track_visit, track_analysis, load_data
 
-# ==============================
-# Track Visit
-# ==============================
 track_visit()
-
-# ==============================
-# Page Config
-# ==============================
 st.set_page_config(page_title="Placement Assistant AI", layout="wide")
 
 # ==============================
-# 🎨 UI Styling
+# 🎨 Premium Startup UI Styling
 # ==============================
 st.markdown("""
 <style>
-[data-testid="stAppViewContainer"] {
-    background: linear-gradient(135deg, #c7d2fe, #e0f2fe);
-}
-.block-container {
-    padding-top: 5rem !important;
-    padding-bottom: 2rem;
-}
-.stMetric, .stAlert, div[data-testid="stExpander"], .stTabs {
+[data-testid="stAppViewContainer"] { background: linear-gradient(135deg, #f8fafc, #e2e8f0); }
+.block-container { padding-top: 4rem !important; }
+
+/* Card Containers */
+.stMetric, .stTabs, .stAlert {
     background-color: white !important;
-    color: #1e293b !important;
-    padding: 20px;
-    border-radius: 14px;
-    box-shadow: 0px 4px 15px rgba(0,0,0,0.08);
-    border: 1px solid rgba(255,255,255,0.3);
-    margin-bottom: 20px;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05) !important;
+    border: 1px solid #cbd5e1 !important;
 }
-[data-testid="stMetricValue"] { color: #1d4ed8 !important; }
-h1, h2, h3 { color: #1e1b4b !important; margin-bottom: 1.5rem !important; }
-.stButton>button {
-    background: linear-gradient(135deg, #2563eb, #1d4ed8);
-    color: white !important;
+
+/* Genuine Risk Items */
+.risk-box {
+    background-color: #fef2f2;
+    color: #991b1b;
+    padding: 15px;
+    border-left: 6px solid #dc2626;
+    border-radius: 8px;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+/* Genuine Improvement Plan Cards */
+.plan-card {
+    background-color: #ffffff;
+    color: #1e293b;
+    padding: 20px;
+    border-top: 4px solid #10b981;
     border-radius: 10px;
-    height: 3.5em;
-    width: 100%;
+    margin-bottom: 15px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+.step-label {
+    color: #059669;
+    font-size: 12px;
     font-weight: bold;
-    border: none;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -62,88 +61,85 @@ h1, h2, h3 { color: #1e1b4b !important; margin-bottom: 1.5rem !important; }
 # HERO SECTION
 # ==============================
 st.markdown("""
-<div style="background: linear-gradient(135deg, #2563eb, #4f46e5); padding: 50px; border-radius: 20px; color: white; text-align: center; margin-bottom: 35px;">
-    <h1 style="color: white !important;">🚀 Placement Assistant AI</h1>
-    <p style="font-size:18px;">Get ATS score, job match & personalized improvement plan instantly</p>
+<div style="background: #1e40af; padding: 40px; border-radius: 20px; color: white; text-align: center; margin-bottom: 30px;">
+    <h1 style="color: white !important; margin: 0;">🚀 Placement Assistant AI</h1>
+    <p style="font-size:18px; opacity: 0.9;">Analyze. Improve. Get Placed.</p>
 </div>
 """, unsafe_allow_html=True)
 
 # ==============================
-# INPUT SECTION
+# ANALYZE LOGIC
 # ==============================
 col1, col2 = st.columns(2)
 with col1:
-    st.markdown("##### 📄 Upload Resume")
-    uploaded_file = st.file_uploader("", type=["pdf", "docx"], label_visibility="collapsed")
+    uploaded_file = st.file_uploader("📄 Upload Resume", type=["pdf", "docx"])
 with col2:
-    st.markdown("##### 📌 Paste Job Description")
-    jd_text = st.text_area("", height=150, placeholder="Paste requirements here...", label_visibility="collapsed")
+    jd_text = st.text_area("📌 Job Description", height=100, placeholder="Optional: Paste JD for better matching")
 
-# ==============================
-# ANALYZE LOGIC
-# ==============================
-if st.button("🚀 Analyze Resume"):
-    if uploaded_file is None:
-        st.warning("⚠️ Please upload a resume first")
-    else:
+if st.button("🔍 Run Full AI Diagnostic"):
+    if uploaded_file:
         track_analysis()
-        with st.spinner("Analyzing..."):
+        with st.spinner("Our AI is scanning your profile..."):
             resume_text = extract_text(uploaded_file)
-            # Store in session state so persona switching works
             st.session_state['resume_text'] = resume_text
             st.session_state['ats_data'] = ats_engine(resume_text)
             st.session_state['jd_score'] = match_jd(resume_text, jd_text) if jd_text.strip() else 0
             st.session_state['risks'] = detect_risks(resume_text)
             st.session_state['analyzed'] = True
+    else:
+        st.warning("Please upload a resume first.")
 
 if st.session_state.get('analyzed'):
-    resume_text = st.session_state['resume_text']
-    ats_data = st.session_state['ats_data']
-    ats_score = ats_data["total"]
-    jd_score = st.session_state['jd_score']
+    res_text = st.session_state['resume_text']
+    ats = st.session_state['ats_data']
+    jd_s = st.session_state['jd_score']
     risks = st.session_state['risks']
 
-    st.markdown("## 📊 Your Resume Insights")
-    c1, c2 = st.columns(2)
-    c1.metric("ATS Score", f"{ats_score}/100")
-    c2.metric("JD Match", f"{jd_score}%")
+    # DASHBOARD
+    st.markdown("### 📈 Analysis Results")
+    m1, m2 = st.columns(2)
+    m1.metric("ATS Score", f"{ats['total']}/100")
+    m2.metric("JD Match", f"{jd_s}%")
 
-    tab1, tab2, tab3, tab4 = st.tabs(["📊 ATS Breakdown", "🎯 JD Match", "⚠️ Risks", "💡 Expert Feedback"])
+    tab1, tab2, tab3, tab4 = st.tabs(["📊 Breakdown", "🎯 Matching", "⚠️ Critical Risks", "💡 Expert Advice"])
 
     with tab1:
-        st.progress(ats_score / 100)
         b1, b2, b3, b4 = st.columns(4)
-        b1.metric("Keywords", ats_data["keywords"])
-        b2.metric("Structure", ats_data["sections"])
-        b3.metric("Verbs", ats_data["verbs"])
-        b4.metric("Impact", ats_data["impact"])
-
-    with tab2:
-        if jd_text.strip():
-            st.progress(jd_score / 100)
-            st.write(f"Match Score: {jd_score}%")
-        else:
-            st.info("Paste JD to see match.")
+        b1.metric("Keywords", ats['keywords'])
+        b2.metric("Structure", ats['sections'])
+        b3.metric("Verbs", ats['verbs'])
+        b4.metric("Impact", ats['impact'])
 
     with tab3:
         if risks:
-            for r in risks: st.warning(r)
-        else: st.success("No risks found!")
+            st.markdown("#### 🚨 Issues that might get you rejected:")
+            for r in risks:
+                st.markdown(f'<div class="risk-box">✖ {r}</div>', unsafe_allow_html=True)
+        else:
+            st.success("Perfect! No structural risks detected.")
 
     with tab4:
-        # Selection triggers a rerun, and since we use session_state, it stays!
-        persona_choice = st.selectbox("Choose a Perspective", ["Recruiter", "Hiring Manager", "CTO"], key="p_select")
-        feedback = persona_engine(resume_text, persona_choice)
-        st.info(feedback)
+        p = st.selectbox("Get feedback from:", ["Recruiter", "Hiring Manager", "CTO"], key="persona_fix")
+        st.info(persona_engine(res_text, p))
 
-    st.markdown("### 🚀 Improvement Plan")
-    plan = generate_plan(ats_score, jd_score, risks)
-    for step in plan:
-        st.markdown(f"✅ {step}")
+    # GENUINE IMPROVEMENT PLAN (The Big Change)
+    st.markdown("---")
+    st.markdown("### 🛠️ Personalized Roadmap to Success")
+    plan = generate_plan(ats['total'], jd_s, risks)
+    
+    plan_col1, plan_col2 = st.columns(2)
+    for i, step in enumerate(plan):
+        target_col = plan_col1 if i % 2 == 0 else plan_col2
+        with target_col:
+            st.markdown(f"""
+            <div class="plan-card">
+                <div class="step-label">Step {i+1}</div>
+                <div style="font-weight: 500; margin-top: 5px;">{step}</div>
+            </div>
+            """, unsafe_allow_html=True)
 
 # ==============================
-# ANALYTICS
+# SIDEBAR ANALYTICS
 # ==============================
 data = load_data()
-st.markdown("---")
-st.write(f"Visits: {data['visits']} | Analyzed: {data['analyses']}")
+st.sidebar.markdown(f"**Community Impact:** {data['analyses']} Resumes Improved")
