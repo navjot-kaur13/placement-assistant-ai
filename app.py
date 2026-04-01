@@ -18,66 +18,52 @@ st.set_page_config(page_title="Placement Assistant AI", layout="wide")
 # ==============================
 st.markdown("""
 <style>
-/* Force Background to be Light Grey for contrast */
-[data-testid="stAppViewContainer"] { 
-    background-color: #f1f5f9 !important; 
+/* Background Contrast */
+[data-testid="stAppViewContainer"] { background-color: #f8fafc !important; }
+
+/* Global Text Visibility */
+h1, h2, h3, h4, h5, p, span, label { color: #1e293b !important; }
+
+/* FIX: File Uploader Box & Text */
+[data-testid="stFileUploader"] section {
+    background-color: #2563eb !important; /* Blue background */
+    border: 2px dashed #ffffff !important;
+    border-radius: 10px !important;
+    padding: 20px !important;
 }
 
-/* Fix text visibility: All headings and labels forced to Dark Navy */
-h1, h2, h3, h4, h5, p, span, label, div {
-    color: #0f172a !important;
-    font-family: 'Inter', sans-serif;
+/* Force File Uploader Text to White */
+[data-testid="stFileUploader"] section div div { color: white !important; }
+[data-testid="stFileUploader"] small { color: #e0e7ff !important; font-weight: bold !important; }
+
+/* Browse Files Button Inside Uploader */
+[data-testid="stFileUploader"] button {
+    background-color: white !important;
+    color: #1d4ed8 !important;
+    border-radius: 5px !important;
 }
 
-/* Card Styling: High visibility borders for phone screens */
+/* Card Styling */
 .stMetric, .stTabs, .stAlert, .analytics-card, .plan-card {
     background-color: white !important;
-    border: 1px solid #cbd5e1 !important;
+    border: 1px solid #e2e8f0 !important;
     border-radius: 12px !important;
     padding: 15px !important;
     margin-bottom: 10px !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
 }
 
-/* Metrics visibility fix */
-[data-testid="stMetricValue"] { 
-    color: #1d4ed8 !important; 
-    font-weight: 800 !important; 
-}
-[data-testid="stMetricLabel"] { 
-    color: #475569 !important; 
-}
+/* Tab Active Color */
+button[data-baseweb="tab"] p { color: #1d4ed8 !important; font-weight: 700 !important; }
 
-/* Tab text fix for mobile */
-button[data-baseweb="tab"] p {
-    color: #1e40af !important;
-    font-weight: 700 !important;
-}
+/* Roadmap Step Labels */
+.step-label { color: #059669 !important; font-size: 11px; font-weight: 800; text-transform: uppercase; }
 
-/* Custom Analytics Cards */
-.analytics-card { 
-    text-align: center; 
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05); 
-}
-
-/* Roadmap Plan Card */
-.plan-card { 
-    border-top: 5px solid #10b981 !important; 
-}
-.step-label { 
-    color: #059669 !important; 
-    font-size: 11px; 
-    font-weight: 800; 
-    text-transform: uppercase; 
-}
-
-/* Button Styling */
+/* Main Analyze Button */
 .stButton>button {
-    background-color: #1d4ed8 !important; 
-    color: white !important;
-    border-radius: 8px !important; 
-    width: 100% !important;
-    height: 3.5em !important;
-    font-weight: bold !important;
+    background: linear-gradient(135deg, #1d4ed8, #2563eb) !important;
+    color: white !important; border-radius: 8px !important;
+    font-weight: bold !important; height: 3.5em !important; border: none !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -86,19 +72,17 @@ button[data-baseweb="tab"] p {
 # HERO SECTION
 # ==============================
 st.markdown("""
-<div style="background: #1e3a8a; padding: 30px 20px; border-radius: 15px; color: white !important; text-align: center; margin-bottom: 20px;">
+<div style="background: #1e3a8a; padding: 30px; border-radius: 15px; color: white !important; text-align: center; margin-bottom: 20px;">
     <h1 style="color: white !important; margin: 0; font-size: 24px;">🚀 Placement Assistant AI</h1>
-    <p style="color: #bfdbfe !important; margin-top: 5px; font-size: 14px;">Your Smart Career Copilot</p>
+    <p style="color: #bfdbfe !important; margin-top: 5px; font-size: 14px;">Analyze. Improve. Get Placed.</p>
 </div>
 """, unsafe_allow_html=True)
 
 # ==============================
-# 📊 TOP ANALYTICS (Community Impact)
+# 📊 TOP ANALYTICS
 # ==============================
 data = load_data()
-st.markdown("#### 🌎 Global Impact")
 a1, a2, a3 = st.columns(3)
-
 with a1:
     st.markdown(f'<div class="analytics-card"><h3 style="margin:0; color:#1d4ed8 !important;">{data["visits"]}</h3><p style="margin:0; font-size:12px;">Visits</p></div>', unsafe_allow_html=True)
 with a2:
@@ -110,11 +94,13 @@ with a3:
 st.markdown("<br>", unsafe_allow_html=True)
 
 # ==============================
-# 📄 INPUT SECTION
+# 📄 INPUT SECTION (FIXED VISIBILITY)
 # ==============================
 st.markdown("#### 🔍 Step 1: Upload Your Profile")
-uploaded_file = st.file_uploader("Resume (PDF/DOCX)", type=["pdf", "docx"])
-jd_text = st.text_area("Job Description (Optional)", height=120, placeholder="Paste JD here for better matching...")
+uploaded_file = st.file_uploader("Select your Resume", type=["pdf", "docx"])
+
+st.markdown("#### 📌 Step 2: Target Job Description")
+jd_text = st.text_area("JD Area", height=100, placeholder="Paste Job Description here...", label_visibility="collapsed")
 
 # ==============================
 # 🧠 AI DIAGNOSTIC BUTTON
@@ -149,7 +135,6 @@ if st.session_state.get('analyzed'):
     tab1, tab2, tab3, tab4 = st.tabs(["📊 Breakdown", "🎯 Match", "⚠️ Risks", "💡 Advice"])
 
     with tab1:
-        st.markdown("**Breakdown:**")
         b1, b2, b3, b4 = st.columns(4)
         b1.metric("Keywords", ats['keywords'])
         b2.metric("Structure", ats['sections'])
@@ -158,27 +143,23 @@ if st.session_state.get('analyzed'):
 
     with tab2:
         if jd_text.strip():
-            st.write(f"Overall Match: {jd_s}%")
             st.progress(jd_s/100)
         else:
             st.info("Paste a Job Description to see match score.")
 
     with tab3:
         if risks:
-            for r in risks:
-                st.error(f"🚨 {r}")
-        else:
-            st.success("No structural red flags detected!")
+            for r in risks: st.error(f"🚨 {r}")
+        else: st.success("No structural red flags detected!")
 
     with tab4:
-        p = st.selectbox("Get feedback from:", ["Recruiter", "Hiring Manager", "CTO"], key="p_fix_mobile")
+        p = st.selectbox("Perspective:", ["Recruiter", "Hiring Manager", "CTO"], key="p_fix_final")
         st.info(persona_engine(res_text, p))
 
     # ROADMAP PLAN
     st.markdown("---")
     st.markdown("#### 🛠️ Personalized Roadmap")
     plan = generate_plan(ats['total'], jd_s, risks)
-    
     for i, step in enumerate(plan):
         st.markdown(f"""
         <div class="plan-card">
