@@ -97,7 +97,7 @@ with a2:
     st.metric("Resumes Analyzed", data['analyses'])
 with a3:
     # Success metric wake-up call
-    rate = "94%" if data['analyses'] >= 5 else "---"
+    rate = "94%" if data['analyses'] >= 4 else "---"
     st.metric("Success Rate", rate)
 
 st.markdown("<br>", unsafe_allow_html=True)
