@@ -31,14 +31,15 @@ track_visit()
 st.set_page_config(page_title="Placement AI | Navjot Kaur", page_icon="🎯", layout="wide")
 
 # ==============================
-# 📱 PROFESSIONAL BLUE THEME (ANTI-DARK MODE)
+# 📱 FINAL UI POLISH (DARK MODE PROOF)
 # ==============================
 st.markdown("""
 <style>
+/* Background & Global Text */
 [data-testid="stAppViewContainer"] { background-color: #f8fafc !important; }
 h1, h2, h3, h4, h5, p, span, label, div { color: #1e293b !important; font-weight: 500; }
 
-/* 🛡️ BLUE ACTION ZONE (Force constant color for mobile) */
+/* 🛡️ STEP 1 & 2 ACTION ZONES (Deep Blue) */
 textarea, [data-testid="stFileUploader"] section {
     background-color: #1e3a8a !important;
     color: #ffffff !important;
@@ -46,30 +47,46 @@ textarea, [data-testid="stFileUploader"] section {
     border-radius: 12px !important;
 }
 
-/* Fix for Input Text visibility */
+/* ⚪ FORCE WHITE TEXT FOR UPLOADER (Drag & Drop Fix) */
+[data-testid="stFileUploader"] section div div {
+    color: #ffffff !important;
+}
+
+/* 📱 BROWSE FILES BUTTON FIX (White Background / Blue Text) */
+div[data-testid="stFileUploader"] section button {
+    background-color: #ffffff !important;
+    color: #1e3a8a !important;
+    font-weight: bold !important;
+    border: none !important;
+    border-radius: 8px !important;
+}
+
+/* Input Area Text Visibility */
 .stTextArea textarea {
     color: #ffffff !important;
     -webkit-text-fill-color: #ffffff !important;
 }
 
-/* Action Button */
-div.stButton > button:first-child {
-    background: linear-gradient(90deg, #2563eb 0%, #1d4ed8 100%) !important;
-    color: white !important;
-    font-weight: 800 !important;
+/* Roadmap Cards */
+.plan-card {
+    background-color: #ffffff !important;
+    border-left: 10px solid #10b981 !important;
+    padding: 15px !important;
+    margin-bottom: 10px !important;
     border-radius: 10px !important;
-    height: 50px !important;
-    width: 100% !important;
 }
 
-/* Slim & Sleek Footer */
+/* Slim Footer Styling (Navjot Kaur Branding) */
 .footer-container {
     background: #1e3a8a;
-    padding: 15px;
-    border-radius: 12px;
+    padding: 20px;
+    border-radius: 15px;
     color: white !important;
     text-align: center;
-    margin-top: 30px;
+    margin-top: 40px;
+}
+.footer-container b, .footer-container p {
+    color: #ffffff !important;
 }
 .footer-link {
     color: #5eead4 !important;
@@ -78,21 +95,12 @@ div.stButton > button:first-child {
     font-size: 14px;
     font-weight: bold;
 }
-
-.hero-container {
-    background: linear-gradient(135deg, #1e3a8a 0%, #0d9488 100%); 
-    padding: 25px; 
-    border-radius: 20px; 
-    color: white !important; 
-    text-align: center; 
-    margin-bottom: 25px; 
-}
 </style>
 """, unsafe_allow_html=True)
 
 # HERO DISPLAY
 st.markdown("""
-<div class="hero-container">
+<div style="background: linear-gradient(135deg, #1e3a8a 0%, #0d9488 100%); padding: 30px; border-radius: 20px; color: white !important; text-align: center; margin-bottom: 25px;">
     <div style="font-size:30px;">🏹</div>
     <h1 style="color: white !important; margin:0; font-size: 28px;">PLACEMENT ASSISTANT <span style="color: #5eead4;">AI</span></h1>
     <p style="color: #ccfbf1 !important; margin-top: 5px;">Build. Scan. Get Hired.</p>
@@ -118,7 +126,7 @@ if st.button("🚀 Run AI Diagnostic"):
             st.session_state['analyzed'] = True
     else: st.warning("Upload resume first!")
 
-# RESULTS DASHBOARD
+# RESULTS
 if st.session_state.get('analyzed'):
     res_text = st.session_state['resume_text']
     ats = st.session_state['ats_data']
@@ -141,9 +149,9 @@ if st.session_state.get('analyzed'):
     st.markdown("### 🛠️ Personalized Roadmap")
     plan = generate_plan(ats['total'], jd_s, risks)
     for i, step in enumerate(plan):
-        st.markdown(f'<div style="background:white; border-left:5px solid #10b981; padding:10px; margin-bottom:10px; border-radius:5px;"><b>Step {i+1}:</b> {step}</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="plan-card"><b>Step {i+1}:</b> {step}</div>', unsafe_allow_html=True)
 
-# ANALYTICS
+# COMMUNITY ANALYTICS
 st.markdown("<br>---")
 st.markdown("### 🌍 Community Impact")
 data = load_data()
@@ -153,11 +161,11 @@ with c2: st.metric("Resumes Scanned", data['analyses'])
 with c3: st.metric("Success Rate", "94%")
 
 # ==============================
-# 🏆 SLIM FOOTER (Navjot Kaur Branding)
+# 🏆 FOOTER (WHITE TEXT FIXED)
 # ==============================
 st.markdown(f"""
 <div class="footer-container">
-    <p style="margin-bottom: 5px; font-size: 15px;"><b>Built with ❤️ by Navjot Kaur</b></p>
+    <p style="margin-bottom: 5px; font-size: 16px;"><b>Built with ❤️ by Navjot Kaur</b></p>
     <div>
         <a href="https://www.linkedin.com/in/navjot-kaur-b381a4283/" class="footer-link" target="_blank">🔗 LinkedIn</a>
         <a href="https://github.com/navjot-kaur13/placement-assistant-ai" class="footer-link" target="_blank">💻 GitHub</a>
