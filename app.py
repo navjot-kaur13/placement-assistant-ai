@@ -31,22 +31,21 @@ track_visit()
 st.set_page_config(page_title="Placement AI | Navjot Kaur", page_icon="🎯", layout="wide")
 
 # ==============================
-# 📱 PROFESSIONAL MOBILE-FIRST UI
+# 📱 FINAL UI REPAIR (BUTTON & TEXT FIX)
 # ==============================
 st.markdown("""
 <style>
-/* Reset and Global Styles */
 [data-testid="stAppViewContainer"] { background-color: #f8fafc !important; }
 h1, h2, h3, h4, h5, p, span, label, div { color: #1e293b !important; font-weight: 500; }
 
-/* 🛡️ BLUE ACTION ZONE (Step 1 & 2) */
+/* 🛡️ BLUE ACTION ZONE */
 textarea, [data-testid="stFileUploader"] section {
     background-color: #1e3a8a !important;
     border: 2px solid #3b82f6 !important;
     border-radius: 12px !important;
 }
 
-/* ⚪ FORCE WHITE TEXT ON UPLOADER (No more black text!) */
+/* ⚪ FORCE WHITE TEXT FOR DRAG & DROP */
 [data-testid="stFileUploader"] section div div, 
 [data-testid="stFileUploader"] section span, 
 [data-testid="stFileUploader"] section p {
@@ -54,28 +53,29 @@ textarea, [data-testid="stFileUploader"] section {
     -webkit-text-fill-color: #ffffff !important;
 }
 
-/* 📱 BROWSE FILES BUTTON (White/Blue) */
+/* 📱 BROWSE FILES BUTTON (FIXED TEXT COLOR) */
 div[data-testid="stFileUploader"] section button {
     background-color: #ffffff !important;
-    color: #1e3a8a !important;
-    font-weight: bold !important;
+    color: #1e3a8a !important; /* Blue text on white background */
+    font-weight: 800 !important;
     border: none !important;
+    border-radius: 8px !important;
+    padding: 8px 15px !important;
 }
 
-/* 🚀 RUN DIAGNOSTIC BUTTON (The Laptop Look on Mobile) */
+/* 🚀 RUN DIAGNOSTIC BUTTON (STABLE GRADIENT) */
 div.stButton > button {
     background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%) !important;
-    color: white !important;
+    color: #ffffff !important;
     font-weight: 800 !important;
     border-radius: 10px !important;
     height: 55px !important;
     width: 100% !important;
     border: none !important;
     box-shadow: 0px 4px 15px rgba(37, 99, 235, 0.3) !important;
-    text-transform: uppercase;
 }
 
-/* Results Formatting */
+/* Result Cards */
 .plan-card {
     background-color: #ffffff !important;
     border-left: 8px solid #10b981 !important;
@@ -85,24 +85,16 @@ div.stButton > button {
     box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
 }
 
-/* Slim Footer Styling */
+/* Slim Footer */
 .footer-container {
     background: #1e3a8a;
     padding: 20px;
     border-radius: 15px;
-    color: white !important;
     text-align: center;
-    margin-top: 30px;
+    margin-top: 40px;
 }
-.footer-container b, .footer-container p, .footer-container span {
-    color: #ffffff !important;
-}
-.footer-link {
-    color: #5eead4 !important;
-    text-decoration: none;
-    margin: 0 10px;
-    font-weight: bold;
-}
+.footer-container b, .footer-container p { color: #ffffff !important; }
+.footer-link { color: #5eead4 !important; text-decoration: none; margin: 0 10px; font-weight: bold; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -126,7 +118,7 @@ jd_text = st.text_area("JD", height=120, placeholder="Paste JD here...", label_v
 if st.button("🚀 Run Full AI Diagnostic"):
     if uploaded_file:
         track_analysis()
-        with st.spinner("Analyzing career path..."):
+        with st.spinner("Analyzing..."):
             resume_text = extract_text(uploaded_file)
             st.session_state['resume_text'] = resume_text
             st.session_state['ats_data'] = ats_engine(resume_text)
@@ -160,7 +152,7 @@ if st.session_state.get('analyzed'):
     for i, step in enumerate(plan):
         st.markdown(f'<div class="plan-card"><b>Step {i+1}:</b> {step}</div>', unsafe_allow_html=True)
 
-# COMMUNITY ANALYTICS
+# ANALYTICS
 st.markdown("---")
 st.markdown("### 🌍 Community Impact")
 data = load_data()
