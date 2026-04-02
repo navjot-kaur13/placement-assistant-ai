@@ -11,15 +11,15 @@ from analytics import track_visit, track_analysis, load_data
 # 🚀 CORE LOGIC
 # ==============================
 track_visit()
-st.set_page_config(page_title="Placement Assistant AI", layout="wide")
+st.set_page_config(page_title="Placement Assistant AI", page_icon="🚀", layout="wide")
 
 # ==============================
-# 📱 ULTRA-HIGH CONTRAST UI FIX
+# 📱 HIGH VISIBILITY UI FIX (DAY 2 UPDATED)
 # ==============================
 st.markdown("""
 <style>
 /* Background Fix */
-[data-testid="stAppViewContainer"] { background-color: #f0f2f6 !important; }
+[data-testid="stAppViewContainer"] { background-color: #f8fafc !important; }
 
 /* Force ALL text to be dark and visible */
 h1, h2, h3, h4, h5, p, span, label, div {
@@ -27,66 +27,81 @@ h1, h2, h3, h4, h5, p, span, label, div {
     font-weight: 500;
 }
 
-/* Metric Boxes Fix (Visits, Analyzed, etc.) */
+/* Metric Boxes Fix */
 [data-testid="stMetric"] {
     background-color: #ffffff !important;
-    border: 2px solid #1e3a8a !important; /* Thick Dark Blue Border */
-    border-radius: 10px !important;
+    border: 2px solid #1e3a8a !important;
+    border-radius: 12px !important;
     padding: 15px !important;
-    box-shadow: 2px 2px 10px rgba(0,0,0,0.1) !important;
+    box-shadow: 4px 4px 0px rgba(30, 58, 138, 0.1) !important;
 }
 
-/* Metric Numbers Color */
 [data-testid="stMetricValue"] {
-    color: #1d4ed8 !important;
+    color: #1e40af !important;
     font-weight: 900 !important;
-    font-size: 32px !important;
 }
 
-/* Metric Labels Color */
-[data-testid="stMetricLabel"] {
-    color: #000000 !important;
-    font-weight: 700 !important;
-}
-
-/* File Uploader Fix */
+/* FIX: File Uploader Visibility (Mobile) */
 [data-testid="stFileUploader"] section {
-    background-color: #1e40af !important;
+    background-color: #1e3a8a !important;
     border: 2px dashed #ffffff !important;
     color: white !important;
+    padding: 20px !important;
 }
-[data-testid="stFileUploader"] label { color: white !important; }
+[data-testid="stFileUploader"] label { color: white !important; font-weight: bold !important; }
+
+/* FIX: Browse Files Button (Making it White/Visible) */
+[data-testid="stFileUploaderDropzoneInstructions"] button {
+    background-color: #ffffff !important;
+    color: #1e3a8a !important;
+    border: none !important;
+    font-weight: bold !important;
+}
+
+/* FIX: JD Text Area (Making it light for visibility) */
+textarea {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border: 1px solid #cbd5e1 !important;
+}
+
+/* FIX: Main Action Button (Run Diagnostic) */
+div.stButton > button:first-child {
+    background-color: #1e40af !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    border-radius: 8px !important;
+    border: none !important;
+    width: 100% !important;
+    height: 55px !important;
+    font-size: 18px !important;
+    box-shadow: 0px 4px 15px rgba(30, 58, 175, 0.3) !important;
+}
 
 /* Roadmap Cards Fix */
 .plan-card {
     background-color: #ffffff !important;
-    border: 1px solid #1e293b !important;
-    border-left: 8px solid #10b981 !important;
+    border: 1px solid #e2e8f0 !important;
+    border-left: 10px solid #10b981 !important;
     padding: 20px !important;
     margin-bottom: 15px !important;
-    border-radius: 8px !important;
-}
-
-/* Tab visibility */
-button[data-baseweb="tab"] p {
-    color: #1d4ed8 !important;
-    font-weight: bold !important;
+    border-radius: 10px !important;
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ==============================
-# HERO SECTION
+# HERO SECTION (LOGO READY)
 # ==============================
 st.markdown("""
-<div style="background: #1e3a8a; padding: 30px; border-radius: 15px; color: white !important; text-align: center; margin-bottom: 25px;">
-    <h1 style="color: white !important; margin: 0; font-size: 28px;">🚀 Placement Assistant AI</h1>
-    <p style="color: #bfdbfe !important; margin-top: 5px;">Your Smart Career Copilot</p>
+<div style="background: linear-gradient(90deg, #1e3a8a 0%, #1e40af 100%); padding: 35px; border-radius: 20px; color: white !important; text-align: center; margin-bottom: 30px; box-shadow: 0px 10px 20px rgba(0,0,0,0.1);">
+    <h1 style="color: white !important; margin: 0; font-size: 32px;">🚀 Placement Assistant AI</h1>
+    <p style="color: #bfdbfe !important; margin-top: 10px; font-size: 18px;">Build. Scan. Succeed.</p>
 </div>
 """, unsafe_allow_html=True)
 
 # ==============================
-# 📊 TOP ANALYTICS (Community Impact)
+# 📊 TOP ANALYTICS
 # ==============================
 data = load_data()
 a1, a2, a3 = st.columns(3)
@@ -96,7 +111,6 @@ with a1:
 with a2:
     st.metric("Resumes Analyzed", data['analyses'])
 with a3:
-    # Success metric wake-up call
     rate = "94%" if data['analyses'] >= 4 else "---"
     st.metric("Success Rate", rate)
 
@@ -109,12 +123,12 @@ st.markdown("### 🔍 Step 1: Upload Your Profile")
 uploaded_file = st.file_uploader("Select your Resume (PDF/DOCX)", type=["pdf", "docx"])
 
 st.markdown("### 📌 Step 2: Target Job Description")
-jd_text = st.text_area("Job Description", height=120, placeholder="Paste JD here for matching score...", label_visibility="collapsed")
+jd_text = st.text_area("Job Description", height=150, placeholder="Paste JD here to calculate matching score...", label_visibility="collapsed")
 
 if st.button("🔍 Run Full AI Diagnostic"):
     if uploaded_file:
         track_analysis()
-        with st.spinner("AI scanning in progress..."):
+        with st.spinner("AI is analyzing your career path..."):
             resume_text = extract_text(uploaded_file)
             st.session_state['resume_text'] = resume_text
             st.session_state['ats_data'] = ats_engine(resume_text)
