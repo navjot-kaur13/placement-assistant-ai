@@ -1,12 +1,11 @@
 import json
 import os
 
-# Server restart par data loss bachane ke liye base numbers
 FILE_PATH = "analytics_data.json"
 
 def load_data():
-    # Aapka actual traction jo aaj reach hua tha
-    base_stats = {"visits": 105, "analyses": 6}
+    # Setting base numbers to your ACTUAL latest milestones
+    base_stats = {"visits": 225, "analyses": 20}
     
     if not os.path.exists(FILE_PATH):
         return base_stats
@@ -14,8 +13,7 @@ def load_data():
     try:
         with open(FILE_PATH, "r") as f:
             stored_data = json.load(f)
-            # Agar stored data restart ki wajah se base stats se kam dikh raha hai, 
-            # toh hum base stats (105) hi dikhayenge.
+            # Agar stored data restart ki wajah se base stats se kam hai
             if stored_data.get("visits", 0) < base_stats["visits"]:
                 return base_stats
             return stored_data
