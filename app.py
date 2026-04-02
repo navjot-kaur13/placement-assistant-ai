@@ -31,7 +31,7 @@ track_visit()
 st.set_page_config(page_title="Placement AI | Navjot Kaur", page_icon="🎯", layout="wide")
 
 # ==============================
-# 📱 SUPER STABLE CSS
+# 📱 STABLE UI (COLOR FIX)
 # ==============================
 st.markdown("""
 <style>
@@ -56,25 +56,28 @@ div[data-testid="stFileUploader"] section button {
     font-weight: 900 !important;
 }
 
-/* 🚀 RUN DIAGNOSTIC BUTTON (The Laptop Look) */
+/* 🚀 RUN DIAGNOSTIC BUTTON */
 div.stButton > button {
     background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%) !important;
     color: white !important;
     font-weight: 800 !important;
     border-radius: 10px !important;
     height: 50px !important;
-    width: 100% !important;
-    border: none !important;
-    box-shadow: 0px 4px 15px rgba(37, 99, 235, 0.3) !important;
 }
 
-/* Community Impact Fix */
+/* 📊 METRIC TEXT COLOR FIX (FOR PHONE VISIBILITY) */
+[data-testid="stMetricValue"] div {
+    color: #1e3a8a !important; 
+    font-weight: 800 !important;
+}
+[data-testid="stMetricLabel"] p {
+    color: #64748b !important;
+}
 [data-testid="stMetric"] {
     background-color: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
-    padding: 15px !important;
     border-radius: 10px !important;
-    text-align: center !important;
+    padding: 15px !important;
 }
 
 /* Roadmap Cards */
@@ -118,7 +121,7 @@ if st.button("🚀 RUN FULL AI DIAGNOSTIC"):
             st.session_state['analyzed'] = True
     else: st.warning("Upload resume first!")
 
-# RESULTS SECTION
+# RESULTS
 if st.session_state.get('analyzed'):
     res_text = st.session_state['resume_text']
     ats = st.session_state['ats_data']
@@ -132,11 +135,6 @@ if st.session_state.get('analyzed'):
 
     tabs = st.tabs(["📊 Breakdown", "🎯 Keywords", "⚠️ Risks", "💡 Advice", "🎤 Interview Prep"])
     
-    with tabs[0]:
-        b1, b2, b3, b4 = st.columns(4)
-        b1.metric("Keywords", ats['keywords']); b2.metric("Structure", ats['sections'])
-        b3.metric("Verbs", ats['verbs']); b4.metric("Impact", ats['impact'])
-    
     with tabs[4]:
         st.write("### 🎤 Practice Questions")
         qs = generate_questions(res_text)
@@ -148,18 +146,14 @@ if st.session_state.get('analyzed'):
     for i, step in enumerate(plan):
         st.markdown(f'<div class="plan-card"><b>Step {i+1}:</b> {step}</div>', unsafe_allow_html=True)
 
-# COMMUNITY IMPACT
+# COMMUNITY IMPACT (CLEANED)
 st.markdown("---")
 st.markdown("### 🌍 Community Impact")
 data = load_data()
 col1, col2, col3 = st.columns(3)
-with col1:
-    # (+) sign removed here
-    st.metric("Global Visitors", data['visits'])
-with col2:
-    st.metric("Resumes Scanned", data['analyses'])
-with col3:
-    st.metric("Success Rate", "94%")
+with col1: st.metric("Global Visitors", data['visits'])
+with col2: st.metric("Resumes Scanned", data['analyses'])
+with col3: st.metric("Success Rate", "94%")
 
 # FOOTER
 st.markdown(f"""
