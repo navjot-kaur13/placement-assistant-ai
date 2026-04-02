@@ -8,6 +8,24 @@ from utils.improvement_plan import generate_plan
 from analytics import track_visit, track_analysis, load_data
 
 # ==============================
+# 🧠 INTERVIEW ENGINE LOGIC
+# ==============================
+def generate_questions(resume_text):
+    questions = [
+        "Can you walk me through the most technical project mentioned in your resume?",
+        "What was the biggest challenge you faced while working on your projects?",
+        "How would you apply your specific skills to solve a real-world problem here?",
+        "If you had to redo one of your projects today, what would you change?",
+        "Describe a situation where you had to learn a new technology quickly."
+    ]
+    # Simple customization
+    if "React" in resume_text or "Frontend" in resume_text:
+        questions.append("How do you manage state in a large-scale frontend application?")
+    if "Python" in resume_text or "Backend" in resume_text:
+        questions.append("How would you handle slow API responses in a backend system?")
+    return questions[:5]
+
+# ==============================
 # 🚀 CORE LOGIC & CONFIG
 # ==============================
 track_visit()
@@ -22,25 +40,21 @@ st.set_page_config(
 # ==============================
 st.markdown("""
 <style>
-/* Global Background and Text Fix */
 [data-testid="stAppViewContainer"] { background-color: #f8fafc !important; }
 h1, h2, h3, h4, h5, p, span, label, div { color: #000000 !important; font-weight: 500; }
 
-/* 🚨 THE MOBILE DARK-MODE KILLER (Force White Backgrounds) */
 textarea, [data-testid="stFileUploader"], .stTextArea textarea {
     background-color: #ffffff !important;
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
 }
 
-/* File Uploader Container Fix */
 [data-testid="stFileUploader"] section {
     background-color: #1e3a8a !important;
     border: 2px dashed #ffffff !important;
     color: white !important;
 }
 
-/* Browse Button Fix (White/Visible) */
 div[data-testid="stFileUploader"] section button {
     background-color: #ffffff !important;
     color: #1e3a8a !important;
@@ -48,7 +62,6 @@ div[data-testid="stFileUploader"] section button {
     border: none !important;
 }
 
-/* Action Button (Run Diagnostic) */
 div.stButton > button:first-child {
     background-color: #1e40af !important;
     color: #ffffff !important;
@@ -59,7 +72,6 @@ div.stButton > button:first-child {
     box-shadow: 0px 4px 15px rgba(30, 58, 175, 0.3) !important;
 }
 
-/* Keyword Chips Style */
 .keyword-chip {
     display: inline-block;
     background-color: #dcfce7;
@@ -72,7 +84,6 @@ div.stButton > button:first-child {
     border: 1px solid #166534;
 }
 
-/* Roadmap Cards */
 .plan-card {
     background-color: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
@@ -82,7 +93,6 @@ div.stButton > button:first-child {
     border-radius: 10px !important;
 }
 
-/* Metrics Styling (Bottom Section) */
 [data-testid="stMetric"] {
     background-color: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
@@ -90,9 +100,7 @@ div.stButton > button:first-child {
     padding: 10px !important;
 }
 
-/* ==============================
-   🏹 HERO SECTION STYLING (RESPONSIVE)
-   ============================== */
+/* 🏹 HERO SECTION STYLING */
 .hero-container {
     background: linear-gradient(135deg, #1e3a8a 0%, #0d9488 100%); 
     padding: 40px 20px; 
@@ -107,7 +115,6 @@ div.stButton > button:first-child {
 .hero-subtitle { font-size: 16px; opacity: 0.9; margin-top: 10px; color: #ccfbf1 !important; }
 .hero-icon { font-size: 40px; margin-bottom: 10px; }
 
-/* Mobile adjustments */
 @media (max-width: 640px) {
     .hero-container { padding: 25px 10px; border-radius: 15px; margin-bottom: 20px; }
     .hero-title { font-size: 24px; }
@@ -117,29 +124,21 @@ div.stButton > button:first-child {
 </style>
 """, unsafe_allow_html=True)
 
-# ==============================
-# 🏹 HERO SECTION DISPLAY
-# ==============================
+# HERO DISPLAY
 st.markdown("""
 <div class="hero-container">
     <div class="hero-icon">🏹</div>
-    <h1 class="hero-title">
-        PLACEMENT ASSISTANT <span style="color: #5eead4;">AI</span>
-    </h1>
-    <p class="hero-subtitle">
-        "Precision in every scan. Accuracy in every roadmap."
-    </p>
+    <h1 class="hero-title">PLACEMENT ASSISTANT <span style="color: #5eead4;">AI</span></h1>
+    <p class="hero-subtitle">"Precision in every scan. Accuracy in every roadmap."</p>
 </div>
 """, unsafe_allow_html=True)
 
-# ==============================
-# 📄 STEP 1 & 2
-# ==============================
+# STEP 1 & 2
 st.markdown("### 🔍 Step 1: Upload Your Profile")
-uploaded_file = st.file_uploader("Resume (PDF/DOCX)", type=["pdf", "docx"], label_visibility="collapsed")
+uploaded_file = st.file_uploader("Resume", type=["pdf", "docx"], label_visibility="collapsed")
 
-st.markdown("### 📌 Step 2: Target Job Description")
-jd_text = st.text_area("JD Input Box", height=150, placeholder="Paste Job Description here to check for keyword matching...", label_visibility="collapsed")
+st.markdown("### 📌 Step 2: Target JD")
+jd_text = st.text_area("JD Input", height=150, placeholder="Paste Job Description here...", label_visibility="collapsed")
 
 if st.button("🔍 Run Full AI Diagnostic"):
     if uploaded_file:
@@ -154,9 +153,7 @@ if st.button("🔍 Run Full AI Diagnostic"):
     else:
         st.warning("Please upload your resume first!")
 
-# ==============================
-# 📊 RESULTS DASHBOARD
-# ==============================
+# RESULTS DASHBOARD
 if st.session_state.get('analyzed'):
     res_text = st.session_state['resume_text']
     ats = st.session_state['ats_data']
@@ -168,10 +165,10 @@ if st.session_state.get('analyzed'):
     m1.metric("ATS SCORE", f"{ats['total']}/100")
     m2.metric("JD MATCH", f"{jd_s}%")
 
-    tab1, tab2, tab3, tab4 = st.tabs(["📊 Breakdown", "🎯 Keyword Guide", "⚠️ Risks", "💡 Advice"])
+    # 🎤 ADDED INTERVIEW PREP TAB HERE
+    tab1, tab2, tab3, tab4, tab5 = st.tabs(["📊 Breakdown", "🎯 Keyword Guide", "⚠️ Risks", "💡 Advice", "🎤 Interview Prep"])
     
     with tab1:
-        st.write("Detailed structure analysis:")
         b1, b2, b3, b4 = st.columns(4)
         b1.metric("Keywords", ats['keywords'])
         b2.metric("Structure", ats['sections'])
@@ -179,11 +176,10 @@ if st.session_state.get('analyzed'):
         b4.metric("Impact", ats['impact'])
 
     with tab2:
-        st.write("**Top Keywords to include in your resume:**")
-        examples = ["React.js", "Python", "Cloud Computing", "Team Leadership", "Problem Solving", "SQL", "Agile"]
+        st.write("**Top Keywords to include:**")
+        examples = ["React.js", "Python", "Cloud Computing", "Team Leadership", "SQL", "Agile"]
         for word in examples:
             st.markdown(f'<span class="keyword-chip">{word}</span>', unsafe_allow_html=True)
-        st.info("💡 Pro-Tip: Integrating these keywords into your Bullet Points increases visibility to recruiters.")
 
     with tab3:
         if risks:
@@ -191,32 +187,29 @@ if st.session_state.get('analyzed'):
         else: st.success("No structural risks detected!")
 
     with tab4:
-        p = st.selectbox("View Advice From:", ["Recruiter", "Hiring Manager", "CTO"], key="persona_select")
+        p = st.selectbox("Advisor:", ["Recruiter", "Hiring Manager", "CTO"], key="p_select")
         st.info(persona_engine(res_text, p))
+
+    with tab5:
+        st.write("### 🎤 Practice These Questions")
+        st.info("Based on your resume, prepare for these specific questions:")
+        qs = generate_questions(res_text)
+        for i, q in enumerate(qs):
+            st.markdown(f"**Q{i+1}:** {q}")
 
     st.markdown("---")
     st.markdown("### 🛠️ Personalized Roadmap")
     plan = generate_plan(ats['total'], jd_s, risks)
     for i, step in enumerate(plan):
-        st.markdown(f"""
-        <div class="plan-card">
-            <div style="color:#059669; font-weight:800; font-size:12px; text-transform:uppercase;">Step {i+1}</div>
-            <div style="font-weight:700; margin-top:5px; font-size:16px;">{step}</div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f'<div class="plan-card"><div style="color:#059669; font-weight:800; font-size:12px;">STEP {i+1}</div><div style="font-weight:700; margin-top:5px; font-size:16px;">{step}</div></div>', unsafe_allow_html=True)
 
-# ==============================
-# 📈 COMMUNITY ANALYTICS
-# ==============================
-st.markdown("<br><br>", unsafe_allow_html=True)
-st.markdown("---")
+# COMMUNITY ANALYTICS
+st.markdown("<br><br>---")
 st.markdown("### 🌍 Community Impact")
 data = load_data()
 c1, c2, c3 = st.columns(3)
-with c1:
-    st.metric("Global Visitors", data['visits'])
-with c2:
-    st.metric("Resumes Scanned", data['analyses'])
-with c3:
+with c1: st.metric("Global Visitors", data['visits'])
+with c2: st.metric("Resumes Scanned", data['analyses'])
+with c3: 
     rate = "94%" if data['analyses'] >= 4 else "---"
     st.metric("Success Rate", rate)
