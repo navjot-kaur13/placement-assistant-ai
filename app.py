@@ -56,12 +56,25 @@ div[data-testid="stFileUploader"] section button {
     font-weight: 900 !important;
 }
 
-/* Community Impact: Mobile Responsive Fix */
+/* 🚀 RUN DIAGNOSTIC BUTTON (The Laptop Look) */
+div.stButton > button {
+    background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%) !important;
+    color: white !important;
+    font-weight: 800 !important;
+    border-radius: 10px !important;
+    height: 50px !important;
+    width: 100% !important;
+    border: none !important;
+    box-shadow: 0px 4px 15px rgba(37, 99, 235, 0.3) !important;
+}
+
+/* Community Impact Fix */
 [data-testid="stMetric"] {
     background-color: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
     padding: 15px !important;
     border-radius: 10px !important;
+    text-align: center !important;
 }
 
 /* Roadmap Cards */
@@ -96,7 +109,7 @@ jd_text = st.text_area("JD", height=120, placeholder="Paste JD here...", label_v
 if st.button("🚀 RUN FULL AI DIAGNOSTIC"):
     if uploaded_file:
         track_analysis()
-        with st.spinner("AI is analyzing your career path..."):
+        with st.spinner("AI is analyzing..."):
             resume_text = extract_text(uploaded_file)
             st.session_state['resume_text'] = resume_text
             st.session_state['ats_data'] = ats_engine(resume_text)
@@ -105,7 +118,7 @@ if st.button("🚀 RUN FULL AI DIAGNOSTIC"):
             st.session_state['analyzed'] = True
     else: st.warning("Upload resume first!")
 
-# RESULTS SECTION (Restored Tabs & Roadmap)
+# RESULTS SECTION
 if st.session_state.get('analyzed'):
     res_text = st.session_state['resume_text']
     ats = st.session_state['ats_data']
@@ -135,16 +148,20 @@ if st.session_state.get('analyzed'):
     for i, step in enumerate(plan):
         st.markdown(f'<div class="plan-card"><b>Step {i+1}:</b> {step}</div>', unsafe_allow_html=True)
 
-# COMMUNITY IMPACT (Responsive)
-st.markdown("<br>---")
+# COMMUNITY IMPACT
+st.markdown("---")
 st.markdown("### 🌍 Community Impact")
 data = load_data()
 col1, col2, col3 = st.columns(3)
-with col1: st.metric("Global Visitors", f"{data['visits']}+")
-with col2: st.metric("Resumes Scanned", data['analyses'])
-with col3: st.metric("Success Rate", "94%")
+with col1:
+    # (+) sign removed here
+    st.metric("Global Visitors", data['visits'])
+with col2:
+    st.metric("Resumes Scanned", data['analyses'])
+with col3:
+    st.metric("Success Rate", "94%")
 
-# FOOTER (All Links Restored)
+# FOOTER
 st.markdown(f"""
 <div style="background:#1e3a8a; padding:25px; border-radius:15px; text-align:center; margin-top:30px;">
     <p style="color:white !important; margin-bottom:10px;"><b>Built with ❤️ by Navjot Kaur</b></p>
