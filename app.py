@@ -8,35 +8,35 @@ from utils.improvement_plan import generate_plan
 from analytics import track_visit, track_analysis, load_data
 
 # ==============================
-# 🚀 CORE LOGIC & CONFIG
+# 🚀 CORE LOGIC & CONFIG (Tab Icon Updated)
 # ==============================
 track_visit()
-st.set_page_config(page_title="Placement Assistant AI", page_icon="🚀", layout="wide")
+st.set_page_config(
+    page_title="Placement AI | Target Your Dream Job", 
+    page_icon="🎯", 
+    layout="wide"
+)
 
 # ==============================
-# 📱 MOBILE-FIRST & HIGH CONTRAST CSS
+# 📱 MOBILE-FIRST & HIGH CONTRAST CSS (No changes here)
 # ==============================
 st.markdown("""
 <style>
-/* Global Background and Text Fix */
 [data-testid="stAppViewContainer"] { background-color: #f8fafc !important; }
 h1, h2, h3, h4, h5, p, span, label, div { color: #000000 !important; font-weight: 500; }
 
-/* 🚨 THE MOBILE DARK-MODE KILLER (Force White Backgrounds) */
 textarea, [data-testid="stFileUploader"], .stTextArea textarea {
     background-color: #ffffff !important;
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
 }
 
-/* File Uploader Container Fix */
 [data-testid="stFileUploader"] section {
     background-color: #1e3a8a !important;
     border: 2px dashed #ffffff !important;
     color: white !important;
 }
 
-/* Browse Button Fix (White/Visible) */
 div[data-testid="stFileUploader"] section button {
     background-color: #ffffff !important;
     color: #1e3a8a !important;
@@ -44,7 +44,6 @@ div[data-testid="stFileUploader"] section button {
     border: none !important;
 }
 
-/* Action Button (Run Diagnostic) */
 div.stButton > button:first-child {
     background-color: #1e40af !important;
     color: #ffffff !important;
@@ -55,7 +54,6 @@ div.stButton > button:first-child {
     box-shadow: 0px 4px 15px rgba(30, 58, 175, 0.3) !important;
 }
 
-/* Keyword Chips Style */
 .keyword-chip {
     display: inline-block;
     background-color: #dcfce7;
@@ -68,7 +66,6 @@ div.stButton > button:first-child {
     border: 1px solid #166534;
 }
 
-/* Roadmap Cards */
 .plan-card {
     background-color: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
@@ -78,7 +75,6 @@ div.stButton > button:first-child {
     border-radius: 10px !important;
 }
 
-/* Metrics Styling (Bottom Section) */
 [data-testid="stMetric"] {
     background-color: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
@@ -88,16 +84,25 @@ div.stButton > button:first-child {
 </style>
 """, unsafe_allow_html=True)
 
-# HERO SECTION
+# ==============================
+# 🏹 HERO SECTION (NEW LOGO CONCEPT 1)
+# ==============================
 st.markdown("""
-<div style="background: linear-gradient(90deg, #1e3a8a 0%, #1e40af 100%); padding: 30px; border-radius: 20px; color: white !important; text-align: center; margin-bottom: 25px;">
-    <h1 style="color: white !important; margin: 0; font-size: 28px;">🚀 Placement Assistant AI</h1>
-    <p style="color: #bfdbfe !important; margin-top: 5px; font-size: 16px;">Scan. Fix. Get Hired.</p>
+<div style="background: linear-gradient(135deg, #1e3a8a 0%, #0d9488 100%); padding: 50px; border-radius: 30px; color: white !important; text-align: center; margin-bottom: 40px; box-shadow: 0px 20px 40px rgba(13, 148, 136, 0.25); border: 1px solid rgba(255,255,255,0.1);">
+    <div style="display: inline-block; background: rgba(255,255,255,0.2); padding: 20px; border-radius: 50%; margin-bottom: 15px; backdrop-filter: blur(10px);">
+        <span style="font-size: 50px;">🏹</span>
+    </div>
+    <h1 style="color: white !important; margin: 0; font-size: 42px; font-weight: 800; letter-spacing: -1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+        PLACEMENT ASSISTANT <span style="color: #5eead4;">AI</span>
+    </h1>
+    <p style="color: #ccfbf1 !important; margin-top: 10px; font-size: 18px; font-weight: 400; font-style: italic; opacity: 0.9;">
+        "Precision in every scan. Accuracy in every roadmap."
+    </p>
 </div>
 """, unsafe_allow_html=True)
 
 # ==============================
-# 📄 STEP 1 & 2 (Top Priority for Mobile)
+# 📄 STEP 1 & 2
 # ==============================
 st.markdown("### 🔍 Step 1: Upload Your Profile")
 uploaded_file = st.file_uploader("Resume (PDF/DOCX)", type=["pdf", "docx"], label_visibility="collapsed")
@@ -144,7 +149,6 @@ if st.session_state.get('analyzed'):
 
     with tab2:
         st.write("**Top Keywords to include in your resume:**")
-        # Sample Dynamic Keywords (Expand this list as needed)
         examples = ["React.js", "Python", "Cloud Computing", "Team Leadership", "Problem Solving", "SQL", "Agile"]
         for word in examples:
             st.markdown(f'<span class="keyword-chip">{word}</span>', unsafe_allow_html=True)
@@ -153,7 +157,7 @@ if st.session_state.get('analyzed'):
     with tab3:
         if risks:
             for r in risks: st.error(f"🚨 {r}")
-        else: st.success("No structural risks detected! Your resume format is solid.")
+        else: st.success("No structural risks detected!")
 
     with tab4:
         p = st.selectbox("View Advice From:", ["Recruiter", "Hiring Manager", "CTO"], key="persona_select")
@@ -171,7 +175,7 @@ if st.session_state.get('analyzed'):
         """, unsafe_allow_html=True)
 
 # ==============================
-# 📈 COMMUNITY ANALYTICS (Bottom Section)
+# 📈 COMMUNITY ANALYTICS
 # ==============================
 st.markdown("<br><br>", unsafe_allow_html=True)
 st.markdown("---")
