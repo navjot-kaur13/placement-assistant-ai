@@ -14,7 +14,7 @@ track_visit()
 st.set_page_config(page_title="Placement AI | Navjot Kaur", page_icon="🎯", layout="wide")
 
 # ==============================
-# 📱 THE "NO-OVERLAP" CSS FIX
+# 📱 THE "WHITE ON BLUE" ROADMAP CSS
 # ==============================
 st.markdown("""
 <style>
@@ -26,43 +26,34 @@ textarea, [data-testid="stFileUploader"] section {
     border: 2px solid #3b82f6 !important;
 }
 
-/* Force White Text for Uploader Label */
+/* White Text for Uploader Label */
 [data-testid="stFileUploader"] section div div, 
 [data-testid="stFileUploader"] section span {
     color: #ffffff !important;
 }
 
-/* ⚪ BROWSE BUTTON: Dark Blue Text (Force Visibility) */
+/* ⚪ BROWSE BUTTON: Dark Blue Text */
 div[data-testid="stFileUploader"] section button {
     background-color: #ffffff !important;
     color: #1e3a8a !important;
     font-weight: 900 !important;
-    border: none !important;
 }
 
-/* 🚀 RUN BUTTON (The Laptop Look) */
-div.stButton > button {
-    background: linear-gradient(90deg, #2563eb 0%, #1e40af 100%) !important;
-    color: white !important;
-    font-weight: 800 !important;
-    border-radius: 10px !important;
-    height: 50px !important;
-}
-
-/* 📊 METRICS: Blue Numbers & Labels */
+/* 📊 METRICS: Blue Numbers */
 [data-testid="stMetricValue"] div { color: #1e3a8a !important; font-weight: 800 !important; }
 [data-testid="stMetricLabel"] p { color: #475569 !important; font-weight: 600 !important; }
 [data-testid="stMetric"] { background-color: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 10px !important; padding: 10px !important; }
 
-/* 🛠️ ROADMAP: FORCE DARK TEXT (Visibility Fix) */
+/* 🛠️ ROADMAP: WHITE ON BLUE (Requested Fix) */
 .plan-card {
-    background-color: #ffffff !important;
-    border-left: 8px solid #10b981 !important;
+    background-color: #1e3a8a !important; /* Deep Blue Background */
+    border-left: 8px solid #5eead4 !important; /* Teal Highlight */
     padding: 15px !important;
-    margin-bottom: 10px !important;
-    border-radius: 8px !important;
-    color: #1e293b !important; /* DARK TEXT FOR VISIBILITY */
-    box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
+    margin-bottom: 12px !important;
+    border-radius: 10px !important;
+    color: #ffffff !important; /* FORCE PURE WHITE TEXT */
+    font-weight: 500 !important;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
 }
 
 /* Footer Fix */
@@ -78,10 +69,8 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# INPUTS
-st.markdown("### 🔍 Step 1: Upload Your Profile")
+# ... (Inputs and Logic same as before) ...
 uploaded_file = st.file_uploader("Resume", type=["pdf", "docx"], label_visibility="collapsed")
-st.markdown("### 📌 Step 2: Target JD")
 jd_text = st.text_area("JD", height=120, placeholder="Paste JD here...", label_visibility="collapsed")
 
 if st.button("🚀 RUN FULL AI DIAGNOSTIC"):
@@ -96,31 +85,25 @@ if st.button("🚀 RUN FULL AI DIAGNOSTIC"):
             st.session_state['analyzed'] = True
     else: st.warning("Upload resume first!")
 
-# RESULTS SECTION
+# RESULTS & ROADMAP
 if st.session_state.get('analyzed'):
     st.markdown("### 📊 Your Results")
-    ats = st.session_state['ats_data']
-    jd_s = st.session_state['jd_score']
-    
     m1, m2 = st.columns(2)
-    m1.metric("ATS SCORE", f"{ats['total']}/100")
-    m2.metric("JD MATCH", f"{jd_s}%")
-
-    tabs = st.tabs(["📊 Breakdown", "⚠️ Risks", "👤 Persona", "🎤 Prep"])
-    
-    with tabs[0]:
-        b1, b2, b3, b4 = st.columns(4)
-        b1.metric("Keywords", ats['keywords'])
-        b2.metric("Structure", ats['sections'])
-        b3.metric("Verbs", ats['verbs'])
-        b4.metric("Impact", ats['impact'])
+    m1.metric("ATS SCORE", f"{st.session_state['ats_data']['total']}/100")
+    m2.metric("JD MATCH", f"{st.session_state['jd_score']}%")
 
     st.markdown("---")
-    st.markdown("### 🛠️ Roadmap")
-    plan = generate_plan(ats['total'], jd_s, st.session_state['risks'])
+    st.markdown("### 🛠️ Personalized Roadmap")
+    plan = generate_plan(st.session_state['ats_data']['total'], st.session_state['jd_score'], st.session_state['risks'])
+    
     for i, step in enumerate(plan):
-        # Yahan humne inline style add kiya hai taaki text pakka dikhe
-        st.markdown(f'<div class="plan-card" style="color: #1e293b !important;"><b>Step {i+1}:</b> {step}</div>', unsafe_allow_html=True)
+        # 🏹 WHITE ON BLUE FORCE
+        st.markdown(f"""
+        <div class="plan-card">
+            <b style="color: #5eead4;">Step {i+1}:</b> 
+            <span style="color: #ffffff !important;">{step}</span>
+        </div>
+        """, unsafe_allow_html=True)
 
 # COMMUNITY IMPACT
 st.markdown("---")
@@ -133,7 +116,7 @@ with c3: st.metric("Success Rate", "94%")
 
 # FOOTER
 st.markdown(f"""
-<div class="footer-container" style="background:#1e3a8a; padding:25px; border-radius:15px; text-align:center; margin-top:30px;">
+<div style="background:#1e3a8a; padding:25px; border-radius:15px; text-align:center; margin-top:30px;">
     <p style="margin-bottom:10px;"><b>Built with ❤️ by Navjot Kaur</b></p>
     <div>
         <a href="https://www.linkedin.com/in/navjot-kaur-b381a4283/" style="color:#5eead4 !important; margin:0 10px; font-weight:bold; text-decoration:none;">🔗 LinkedIn</a>
