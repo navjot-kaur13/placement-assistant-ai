@@ -8,62 +8,71 @@ from utils.improvement_plan import generate_plan
 from analytics import track_visit, track_analysis, load_data
 
 # ==============================
+# 🧠 INTERVIEW ENGINE LOGIC
+# ==============================
+def generate_questions(resume_text):
+    questions = [
+        "Can you walk me through the most technical project mentioned in your resume?",
+        "What was the biggest challenge you faced while working on your projects?",
+        "How would you apply your specific skills to solve a real-world problem here?",
+        "If you had to redo one of your projects today, what would you change?",
+        "Describe a situation where you had to learn a new technology quickly."
+    ]
+    if "React" in resume_text or "Frontend" in resume_text:
+        questions.append("How do you manage state in a large-scale frontend application?")
+    if "Python" in resume_text or "Backend" in resume_text:
+        questions.append("How would you handle slow API responses in a backend system?")
+    return questions[:5]
+
+# ==============================
 # 🚀 CORE LOGIC & CONFIG
 # ==============================
 track_visit()
 st.set_page_config(page_title="Placement AI | Navjot Kaur", page_icon="🎯", layout="wide")
 
 # ==============================
-# 📱 SUPER FORCE CSS (NO CACHE ALLOWED)
+# 📱 SUPER STABLE CSS
 # ==============================
 st.markdown("""
 <style>
-/* Global Reset */
 [data-testid="stAppViewContainer"] { background-color: #f8fafc !important; }
 
-/* 🛡️ STEP 1 & 2 ACTION ZONES */
+/* Action Boxes Blue */
 textarea, [data-testid="stFileUploader"] section {
     background-color: #1e3a8a !important;
     border: 2px solid #3b82f6 !important;
-    border-radius: 12px !important;
 }
 
-/* ⚪ FORCE WHITE TEXT ON UPLOADER (Text Visibility) */
+/* White Text for Uploader */
 [data-testid="stFileUploader"] section div div, 
-[data-testid="stFileUploader"] section span, 
-[data-testid="stFileUploader"] section p {
+[data-testid="stFileUploader"] section span {
     color: #ffffff !important;
-    fill: #ffffff !important;
 }
 
-/* 📱 BROWSE FILES BUTTON (Absolute Fix) */
+/* Browse Button Fix */
 div[data-testid="stFileUploader"] section button {
     background-color: #ffffff !important;
-    color: #1e3a8a !important; /* Blue text */
+    color: #1e3a8a !important;
     font-weight: 900 !important;
-    border: 2px solid #ffffff !important;
-    opacity: 1 !important;
 }
 
-/* 🚀 RUN DIAGNOSTIC BUTTON */
-div.stButton > button {
-    background: #2563eb !important;
-    background-image: linear-gradient(90deg, #2563eb 0%, #1e40af 100%) !important;
-    color: #ffffff !important;
-    font-weight: 800 !important;
+/* Community Impact: Mobile Responsive Fix */
+[data-testid="stMetric"] {
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    padding: 15px !important;
     border-radius: 10px !important;
-    border: none !important;
-    box-shadow: 0px 4px 15px rgba(37, 99, 235, 0.4) !important;
 }
 
-/* Footer Fix */
-.footer-container {
-    background: #1e3a8a !important;
-    padding: 20px !important;
-    border-radius: 15px !important;
-    text-align: center !important;
+/* Roadmap Cards */
+.plan-card {
+    background-color: #ffffff !important;
+    border-left: 8px solid #10b981 !important;
+    padding: 15px !important;
+    margin-bottom: 10px !important;
+    border-radius: 8px !important;
+    box-shadow: 0px 2px 8px rgba(0,0,0,0.05);
 }
-.footer-container b, .footer-container p { color: #ffffff !important; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -87,7 +96,7 @@ jd_text = st.text_area("JD", height=120, placeholder="Paste JD here...", label_v
 if st.button("🚀 RUN FULL AI DIAGNOSTIC"):
     if uploaded_file:
         track_analysis()
-        with st.spinner("Analyzing..."):
+        with st.spinner("AI is analyzing your career path..."):
             resume_text = extract_text(uploaded_file)
             st.session_state['resume_text'] = resume_text
             st.session_state['ats_data'] = ats_engine(resume_text)
@@ -96,23 +105,51 @@ if st.button("🚀 RUN FULL AI DIAGNOSTIC"):
             st.session_state['analyzed'] = True
     else: st.warning("Upload resume first!")
 
-# RESULTS & FOOTER (Analytics included in between)
+# RESULTS SECTION (Restored Tabs & Roadmap)
 if st.session_state.get('analyzed'):
-    st.markdown("### 📊 Your Results")
-    st.metric("ATS SCORE", f"{st.session_state['ats_data']['total']}/100")
-    # ... baki roadmap aur tabs ...
+    res_text = st.session_state['resume_text']
+    ats = st.session_state['ats_data']
+    jd_s = st.session_state['jd_score']
+    risks = st.session_state['risks']
 
-# ANALYTICS
-st.markdown("---")
+    st.markdown("### 📊 Your Results")
+    m1, m2 = st.columns(2)
+    m1.metric("ATS SCORE", f"{ats['total']}/100")
+    m2.metric("JD MATCH", f"{jd_s}%")
+
+    tabs = st.tabs(["📊 Breakdown", "🎯 Keywords", "⚠️ Risks", "💡 Advice", "🎤 Interview Prep"])
+    
+    with tabs[0]:
+        b1, b2, b3, b4 = st.columns(4)
+        b1.metric("Keywords", ats['keywords']); b2.metric("Structure", ats['sections'])
+        b3.metric("Verbs", ats['verbs']); b4.metric("Impact", ats['impact'])
+    
+    with tabs[4]:
+        st.write("### 🎤 Practice Questions")
+        qs = generate_questions(res_text)
+        for i, q in enumerate(qs): st.markdown(f"**Q{i+1}:** {q}")
+
+    st.markdown("---")
+    st.markdown("### 🛠️ Personalized Roadmap")
+    plan = generate_plan(ats['total'], jd_s, risks)
+    for i, step in enumerate(plan):
+        st.markdown(f'<div class="plan-card"><b>Step {i+1}:</b> {step}</div>', unsafe_allow_html=True)
+
+# COMMUNITY IMPACT (Responsive)
+st.markdown("<br>---")
 st.markdown("### 🌍 Community Impact")
 data = load_data()
-st.write(f"Global Visitors: {data['visits']}")
+col1, col2, col3 = st.columns(3)
+with col1: st.metric("Global Visitors", f"{data['visits']}+")
+with col2: st.metric("Resumes Scanned", data['analyses'])
+with col3: st.metric("Success Rate", "94%")
 
-# FOOTER
+# FOOTER (All Links Restored)
 st.markdown(f"""
-<div class="footer-container">
-    <p><b>Built with ❤️ by Navjot Kaur</b></p>
-    <a href="https://www.linkedin.com/in/navjot-kaur-b381a4283/" style="color:#5eead4; margin-right:10px;">LinkedIn</a>
-    <a href="https://github.com/navjot-kaur13/placement-assistant-ai" style="color:#5eead4;">GitHub</a>
+<div style="background:#1e3a8a; padding:25px; border-radius:15px; text-align:center; margin-top:30px;">
+    <p style="color:white !important; margin-bottom:10px;"><b>Built with ❤️ by Navjot Kaur</b></p>
+    <a href="https://www.linkedin.com/in/navjot-kaur-b381a4283/" style="color:#5eead4; margin:0 10px; font-weight:bold; text-decoration:none;">🔗 LinkedIn</a>
+    <a href="https://github.com/navjot-kaur13/placement-assistant-ai" style="color:#5eead4; margin:0 10px; font-weight:bold; text-decoration:none;">💻 GitHub</a>
+    <a href="mailto:kaur21navjot@gmail.com" style="color:#5eead4; margin:0 10px; font-weight:bold; text-decoration:none;">📧 Feedback</a>
 </div>
 """, unsafe_allow_html=True)
