@@ -8,7 +8,7 @@ from utils.improvement_plan import generate_plan
 from analytics import track_visit, track_analysis, load_data
 
 # ==============================
-# 🚀 CORE LOGIC & CONFIG (Tab Icon Updated)
+# 🚀 CORE LOGIC & CONFIG
 # ==============================
 track_visit()
 st.set_page_config(
@@ -18,25 +18,29 @@ st.set_page_config(
 )
 
 # ==============================
-# 📱 MOBILE-FIRST & HIGH CONTRAST CSS (No changes here)
+# 📱 MOBILE-FIRST & HIGH CONTRAST CSS
 # ==============================
 st.markdown("""
 <style>
+/* Global Background and Text Fix */
 [data-testid="stAppViewContainer"] { background-color: #f8fafc !important; }
 h1, h2, h3, h4, h5, p, span, label, div { color: #000000 !important; font-weight: 500; }
 
+/* 🚨 THE MOBILE DARK-MODE KILLER (Force White Backgrounds) */
 textarea, [data-testid="stFileUploader"], .stTextArea textarea {
     background-color: #ffffff !important;
     color: #000000 !important;
     -webkit-text-fill-color: #000000 !important;
 }
 
+/* File Uploader Container Fix */
 [data-testid="stFileUploader"] section {
     background-color: #1e3a8a !important;
     border: 2px dashed #ffffff !important;
     color: white !important;
 }
 
+/* Browse Button Fix (White/Visible) */
 div[data-testid="stFileUploader"] section button {
     background-color: #ffffff !important;
     color: #1e3a8a !important;
@@ -44,6 +48,7 @@ div[data-testid="stFileUploader"] section button {
     border: none !important;
 }
 
+/* Action Button (Run Diagnostic) */
 div.stButton > button:first-child {
     background-color: #1e40af !important;
     color: #ffffff !important;
@@ -54,6 +59,7 @@ div.stButton > button:first-child {
     box-shadow: 0px 4px 15px rgba(30, 58, 175, 0.3) !important;
 }
 
+/* Keyword Chips Style */
 .keyword-chip {
     display: inline-block;
     background-color: #dcfce7;
@@ -66,6 +72,7 @@ div.stButton > button:first-child {
     border: 1px solid #166534;
 }
 
+/* Roadmap Cards */
 .plan-card {
     background-color: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
@@ -75,27 +82,51 @@ div.stButton > button:first-child {
     border-radius: 10px !important;
 }
 
+/* Metrics Styling (Bottom Section) */
 [data-testid="stMetric"] {
     background-color: #ffffff !important;
     border: 1px solid #e2e8f0 !important;
     border-radius: 12px !important;
     padding: 10px !important;
 }
+
+/* ==============================
+   🏹 HERO SECTION STYLING (RESPONSIVE)
+   ============================== */
+.hero-container {
+    background: linear-gradient(135deg, #1e3a8a 0%, #0d9488 100%); 
+    padding: 40px 20px; 
+    border-radius: 25px; 
+    color: white !important; 
+    text-align: center; 
+    margin-bottom: 30px; 
+    box-shadow: 0px 15px 30px rgba(13, 148, 136, 0.2);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.hero-title { font-size: 38px; font-weight: 800; margin: 0; color: white !important; }
+.hero-subtitle { font-size: 16px; opacity: 0.9; margin-top: 10px; color: #ccfbf1 !important; }
+.hero-icon { font-size: 40px; margin-bottom: 10px; }
+
+/* Mobile adjustments */
+@media (max-width: 640px) {
+    .hero-container { padding: 25px 10px; border-radius: 15px; margin-bottom: 20px; }
+    .hero-title { font-size: 24px; }
+    .hero-subtitle { font-size: 13px; margin-top: 5px; }
+    .hero-icon { font-size: 30px; margin-bottom: 5px; }
+}
 </style>
 """, unsafe_allow_html=True)
 
 # ==============================
-# 🏹 HERO SECTION (NEW LOGO CONCEPT 1)
+# 🏹 HERO SECTION DISPLAY
 # ==============================
 st.markdown("""
-<div style="background: linear-gradient(135deg, #1e3a8a 0%, #0d9488 100%); padding: 50px; border-radius: 30px; color: white !important; text-align: center; margin-bottom: 40px; box-shadow: 0px 20px 40px rgba(13, 148, 136, 0.25); border: 1px solid rgba(255,255,255,0.1);">
-    <div style="display: inline-block; background: rgba(255,255,255,0.2); padding: 20px; border-radius: 50%; margin-bottom: 15px; backdrop-filter: blur(10px);">
-        <span style="font-size: 50px;">🏹</span>
-    </div>
-    <h1 style="color: white !important; margin: 0; font-size: 42px; font-weight: 800; letter-spacing: -1px; text-shadow: 2px 2px 4px rgba(0,0,0,0.2);">
+<div class="hero-container">
+    <div class="hero-icon">🏹</div>
+    <h1 class="hero-title">
         PLACEMENT ASSISTANT <span style="color: #5eead4;">AI</span>
     </h1>
-    <p style="color: #ccfbf1 !important; margin-top: 10px; font-size: 18px; font-weight: 400; font-style: italic; opacity: 0.9;">
+    <p class="hero-subtitle">
         "Precision in every scan. Accuracy in every roadmap."
     </p>
 </div>
