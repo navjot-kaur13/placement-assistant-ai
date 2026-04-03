@@ -5,7 +5,7 @@ FILE_PATH = "analytics_data.json"
 
 def load_data():
     # 🚨 HARD MILESTONE: Setting base to your latest success
-    base_stats = {"visits": 320, "analyses": 30}
+    base_stats = {"visits": 386, "analyses": 46}
     
     if not os.path.exists(FILE_PATH):
         return base_stats
