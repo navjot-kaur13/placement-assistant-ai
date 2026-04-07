@@ -1,7 +1,7 @@
 import streamlit as st
 import re
 
-# 1. PEHLE ANALYTICS IMPORT KAREIN (Checking the right path)
+# 1. PEHLE ANALYTICS IMPORT KAREIN
 try:
     from utils.analytics import track_visit, track_analysis, load_data
 except ImportError:
@@ -10,7 +10,7 @@ except ImportError:
 # 2. BAAKI UTILS IMPORTS
 from utils.resume_parser import extract_text
 from utils.ats_engine import ats_engine
-from utils.jd_matcher import match_jd
+from utils.jd_matcher import match_jd, get_missing_keywords  # <--- UPDATE: Added get_missing_keywords
 from utils.risk_flags import detect_risks
 from utils.persona_engine import persona_engine
 from utils.improvement_plan import generate_plan
@@ -31,14 +31,11 @@ def generate_questions(resume_text):
 # ==============================
 # 🚀 CORE CONFIG & TRACKING
 # ==============================
-# Page config sabse upar hona chahiye
 st.set_page_config(page_title="Placement AI | Navjot Kaur", page_icon="🎯", layout="wide")
-
-# Track visitor automatically when page loads
 track_visit()
 
 # ==============================
-# 📱 UNIVERSAL CSS (STABLE & VISIBLE)
+# 📱 UNIVERSAL CSS
 # ==============================
 st.markdown("""
 <style>
@@ -70,7 +67,6 @@ jd_text = st.text_area("JD", height=120, placeholder="Paste JD here...", label_v
 
 if st.button("🚀 RUN FULL AI DIAGNOSTIC"):
     if uploaded_file:
-        # Track scan count
         track_analysis()
         with st.spinner("Analyzing..."):
             resume_text = extract_text(uploaded_file)
@@ -101,10 +97,17 @@ if st.session_state.get('analyzed'):
     
     with tabs[1]:
         st.write("### 🚀 Add these to increase JD Match:")
-        # Dynamic keywords agar aapke engine mein hain toh use karein, warna static:
-        suggested_keywords = ["System Design", "Scalability", "Unit Testing", "REST APIs", "Cloud Deployment"]
-        for word in suggested_keywords:
-            st.markdown(f'<span class="keyword-chip">{word}</span>', unsafe_allow_html=True)
+        # --- 🛠️ UPDATE: DYNAMIC KEYWORDS LOGIC ---
+        if jd_text.strip():
+            missing_words = get_missing_keywords(st.session_state['resume_text'], jd_text)
+            if missing_words:
+                for word in missing_words:
+                    st.markdown(f'<span class="keyword-chip">{word}</span>', unsafe_allow_html=True)
+            else:
+                st.success("🔥 Perfect! Your resume covers all major keywords found in this JD.")
+        else:
+            st.info("Paste a Job Description (JD) to see missing keywords.")
+        # --- END OF UPDATE ---
     
     with tabs[2]:
         if st.session_state['risks']:
@@ -128,7 +131,7 @@ if st.session_state.get('analyzed'):
     for i, step in enumerate(plan):
         st.markdown(f'<div class="plan-card"><b style="color: #5eead4;">Step {i+1}:</b> {step}</div>', unsafe_allow_html=True)
 
-# COMMUNITY IMPACT (Using load_data from your analytics.py)
+# COMMUNITY IMPACT
 st.markdown("---")
 st.markdown("### 🌍 Community Impact")
 try:
@@ -140,7 +143,7 @@ try:
 except:
     st.write("Loading stats...")
 
-# FOOTER (Kept exactly as you had it)
+# FOOTER
 st.markdown(f"""
 <div style="background:#1e3a8a; padding:25px; border-radius:15px; text-align:center; margin-top:30px;">
     <p style="color: #ffffff !important; margin-bottom:10px; font-weight: bold;">Built with ❤️ by Navjot Kaur</p>
