@@ -1,13 +1,19 @@
-from utils.analytics import auto_update_visitor, get_stats
-auto_update_visitor() # This runs automatically on every new load
-stats = get_stats()   # This pulls the latest real-time numbersimport streamlit as st
+import streamlit as st
+import re
+
+# 1. PEHLE ANALYTICS IMPORT KAREIN (Checking the right path)
+try:
+    from utils.analytics import track_visit, track_analysis, load_data
+except ImportError:
+    from analytics import track_visit, track_analysis, load_data
+
+# 2. BAAKI UTILS IMPORTS
 from utils.resume_parser import extract_text
 from utils.ats_engine import ats_engine
 from utils.jd_matcher import match_jd
 from utils.risk_flags import detect_risks
 from utils.persona_engine import persona_engine
 from utils.improvement_plan import generate_plan
-from analytics import track_visit, track_analysis, load_data
 
 # ==============================
 # 🧠 INTERVIEW ENGINE LOGIC
@@ -23,10 +29,13 @@ def generate_questions(resume_text):
     return questions[:5]
 
 # ==============================
-# 🚀 CORE CONFIG
+# 🚀 CORE CONFIG & TRACKING
 # ==============================
-track_visit()
+# Page config sabse upar hona chahiye
 st.set_page_config(page_title="Placement AI | Navjot Kaur", page_icon="🎯", layout="wide")
+
+# Track visitor automatically when page loads
+track_visit()
 
 # ==============================
 # 📱 UNIVERSAL CSS (STABLE & VISIBLE)
@@ -34,48 +43,14 @@ st.set_page_config(page_title="Placement AI | Navjot Kaur", page_icon="🎯", la
 st.markdown("""
 <style>
 [data-testid="stAppViewContainer"] { background-color: #f8fafc !important; }
-
-/* Action Boxes Blue */
-textarea, [data-testid="stFileUploader"] section {
-    background-color: #1e3a8a !important;
-    border: 2px solid #3b82f6 !important;
-}
-
-/* White Text for Inputs */
-[data-testid="stFileUploader"] section div div, 
-[data-testid="stFileUploader"] section span, 
-.stTextArea textarea {
-    color: #ffffff !important;
-    -webkit-text-fill-color: #ffffff !important;
-}
-
-/* ⚪ BROWSE BUTTON: Dark Blue Text */
-div[data-testid="stFileUploader"] section button {
-    background-color: #ffffff !important;
-    color: #1e3a8a !important;
-    font-weight: 900 !important;
-}
-
-/* 📊 METRICS: Blue Numbers & Dark Grey Labels */
+textarea, [data-testid="stFileUploader"] section { background-color: #1e3a8a !important; border: 2px solid #3b82f6 !important; }
+[data-testid="stFileUploader"] section div div, [data-testid="stFileUploader"] section span, .stTextArea textarea { color: #ffffff !important; -webkit-text-fill-color: #ffffff !important; }
+div[data-testid="stFileUploader"] section button { background-color: #ffffff !important; color: #1e3a8a !important; font-weight: 900 !important; }
 [data-testid="stMetricValue"] div { color: #1e3a8a !important; font-weight: 800 !important; }
 [data-testid="stMetricLabel"] p { color: #475569 !important; font-weight: 600 !important; }
 [data-testid="stMetric"] { background-color: #ffffff !important; border: 1px solid #e2e8f0 !important; border-radius: 10px !important; padding: 10px !important; }
-
-/* 🛠️ ROADMAP: WHITE ON BLUE (Requested Fix) */
-.plan-card {
-    background-color: #1e3a8a !important; 
-    border-left: 8px solid #5eead4 !important; 
-    padding: 15px !important;
-    margin-bottom: 12px !important;
-    border-radius: 10px !important;
-    color: #ffffff !important; 
-    font-weight: 500 !important;
-}
-
-/* 🎯 KEYWORD CHIPS */
-.keyword-chip {
-    background-color: #e0f2fe; color: #0369a1; padding: 5px 12px; border-radius: 20px; font-weight: bold; margin-right: 5px; display: inline-block; margin-bottom: 8px; border: 1px solid #bae6fd;
-}
+.plan-card { background-color: #1e3a8a !important; border-left: 8px solid #5eead4 !important; padding: 15px !important; margin-bottom: 12px !important; border-radius: 10px !important; color: #ffffff !important; font-weight: 500 !important; }
+.keyword-chip { background-color: #e0f2fe; color: #0369a1; padding: 5px 12px; border-radius: 20px; font-weight: bold; margin-right: 5px; display: inline-block; margin-bottom: 8px; border: 1px solid #bae6fd; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -95,6 +70,7 @@ jd_text = st.text_area("JD", height=120, placeholder="Paste JD here...", label_v
 
 if st.button("🚀 RUN FULL AI DIAGNOSTIC"):
     if uploaded_file:
+        # Track scan count
         track_analysis()
         with st.spinner("Analyzing..."):
             resume_text = extract_text(uploaded_file)
@@ -103,9 +79,10 @@ if st.button("🚀 RUN FULL AI DIAGNOSTIC"):
             st.session_state['jd_score'] = match_jd(resume_text, jd_text) if jd_text.strip() else 0
             st.session_state['risks'] = detect_risks(resume_text)
             st.session_state['analyzed'] = True
-    else: st.warning("Upload resume first!")
+    else: 
+        st.warning("Upload resume first!")
 
-# RESULTS SECTION (WITH ALL TABS RESTORED)
+# RESULTS SECTION
 if st.session_state.get('analyzed'):
     ats = st.session_state['ats_data']
     jd_s = st.session_state['jd_score']
@@ -115,7 +92,6 @@ if st.session_state.get('analyzed'):
     m1.metric("ATS SCORE", f"{ats['total']}/100")
     m2.metric("JD MATCH", f"{jd_s}%")
 
-    # RESTORED TABS
     tabs = st.tabs(["📊 Breakdown", "🎯 Keywords to Add", "⚠️ Risks", "👤 Persona", "🎤 Prep"])
     
     with tabs[0]:
@@ -125,6 +101,7 @@ if st.session_state.get('analyzed'):
     
     with tabs[1]:
         st.write("### 🚀 Add these to increase JD Match:")
+        # Dynamic keywords agar aapke engine mein hain toh use karein, warna static:
         suggested_keywords = ["System Design", "Scalability", "Unit Testing", "REST APIs", "Cloud Deployment"]
         for word in suggested_keywords:
             st.markdown(f'<span class="keyword-chip">{word}</span>', unsafe_allow_html=True)
@@ -149,18 +126,21 @@ if st.session_state.get('analyzed'):
     st.markdown("### 🛠️ Personalized Roadmap")
     plan = generate_plan(ats['total'], jd_s, st.session_state['risks'])
     for i, step in enumerate(plan):
-        st.markdown(f'<div class="plan-card"><b style="color: #5eead4;">Step {i+1}:</b> <span style="color: #ffffff !important;">{step}</span></div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="plan-card"><b style="color: #5eead4;">Step {i+1}:</b> {step}</div>', unsafe_allow_html=True)
 
-# COMMUNITY IMPACT
+# COMMUNITY IMPACT (Using load_data from your analytics.py)
 st.markdown("---")
 st.markdown("### 🌍 Community Impact")
-data = load_data()
-c1, c2, c3 = st.columns(3)
-with c1: st.metric("Global Visitors", data['visits'])
-with c2: st.metric("Resumes Scanned", data['analyses'])
-with c3: st.metric("Success Rate", "94%")
+try:
+    data = load_data()
+    c1, c2, c3 = st.columns(3)
+    c1.metric("Global Visitors", data['visits'])
+    c2.metric("Resumes Scanned", data['analyses'])
+    c3.metric("Success Rate", "94%")
+except:
+    st.write("Loading stats...")
 
-# FOOTER
+# FOOTER (Kept exactly as you had it)
 st.markdown(f"""
 <div style="background:#1e3a8a; padding:25px; border-radius:15px; text-align:center; margin-top:30px;">
     <p style="color: #ffffff !important; margin-bottom:10px; font-weight: bold;">Built with ❤️ by Navjot Kaur</p>
