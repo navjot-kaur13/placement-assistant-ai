@@ -10,7 +10,7 @@ except ImportError:
 # 2. BAAKI UTILS IMPORTS
 from utils.resume_parser import extract_text
 from utils.ats_engine import ats_engine
-from utils.jd_matcher import match_jd, get_missing_keywords  # <--- UPDATE: Added get_missing_keywords
+from utils.jd_matcher import match_jd, get_missing_keywords
 from utils.risk_flags import detect_risks
 from utils.persona_engine import persona_engine
 from utils.improvement_plan import generate_plan
@@ -65,9 +65,10 @@ uploaded_file = st.file_uploader("Resume", type=["pdf", "docx"], label_visibilit
 st.markdown("### 📌 Step 2: Target JD")
 jd_text = st.text_area("JD", height=120, placeholder="Paste JD here...", label_visibility="collapsed")
 
+# --- 🛠️ UPDATE: FIXED RERUN LOGIC FOR ANALYTICS ---
 if st.button("🚀 RUN FULL AI DIAGNOSTIC"):
     if uploaded_file:
-        track_analysis()
+        track_analysis() # Analysis count badhao
         with st.spinner("Analyzing..."):
             resume_text = extract_text(uploaded_file)
             st.session_state['resume_text'] = resume_text
@@ -75,6 +76,7 @@ if st.button("🚀 RUN FULL AI DIAGNOSTIC"):
             st.session_state['jd_score'] = match_jd(resume_text, jd_text) if jd_text.strip() else 0
             st.session_state['risks'] = detect_risks(resume_text)
             st.session_state['analyzed'] = True
+            st.rerun() # Page refresh karo taaki Community Impact update ho jaye
     else: 
         st.warning("Upload resume first!")
 
@@ -97,7 +99,6 @@ if st.session_state.get('analyzed'):
     
     with tabs[1]:
         st.write("### 🚀 Add these to increase JD Match:")
-        # --- 🛠️ UPDATE: DYNAMIC KEYWORDS LOGIC ---
         if jd_text.strip():
             missing_words = get_missing_keywords(st.session_state['resume_text'], jd_text)
             if missing_words:
@@ -107,7 +108,6 @@ if st.session_state.get('analyzed'):
                 st.success("🔥 Perfect! Your resume covers all major keywords found in this JD.")
         else:
             st.info("Paste a Job Description (JD) to see missing keywords.")
-        # --- END OF UPDATE ---
     
     with tabs[2]:
         if st.session_state['risks']:
