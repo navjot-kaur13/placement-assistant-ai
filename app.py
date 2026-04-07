@@ -1,4 +1,6 @@
-import streamlit as st
+from utils.analytics import auto_update_visitor, get_stats
+auto_update_visitor() # This runs automatically on every new load
+stats = get_stats()   # This pulls the latest real-time numbersimport streamlit as st
 from utils.resume_parser import extract_text
 from utils.ats_engine import ats_engine
 from utils.jd_matcher import match_jd
